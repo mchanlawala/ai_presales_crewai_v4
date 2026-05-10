@@ -1,0 +1,48 @@
+# Steel Manufacturing Knowledge Base
+# Requirement for RFID-Based Solution for HR Coil Yard Facility
+
+Requirement for RFID-Based Solution for HR Coil Yard Facility
+
+HR Yard-1:
+
+Concrete flooring with ~540 saddles for double-stacking HR coils.
+
+Operations are carried out using a 45 MT Goliath crane.
+
+HR Yard-2:
+
+Raw surface without flooring and saddles.
+
+Currently used for single-stacking HR coils due to uneven surface.
+
+Current Pain Points:
+
+After weighment, stickers are manually pasted on coils (risk of errors or wrong placement).
+
+During issue of HR coils to user departments, identification is done manually by a person who marks coils with chalk.
+
+This process is time-consuming and requires significant manpower, impacting daily operational efficiency.
+
+Requirement:
+
+We need a smart RFID-based solution to:
+
+Eliminate manual sticker pasting.
+
+Automate identification and marking of coils for lifting.
+
+Save time and resources while improving accuracy and efficiency.
+
+Expected RFID Features:
+
+Durable RFID Tags: Capable of withstanding outdoor conditions, dust, and temperature variations.
+
+Long-Range Readability: Tags should be readable from a distance suitable for crane operations.
+
+Integration Capability: System should integrate with existing weighbridge and yard management software.
+
+Real-Time Tracking: Ability to locate and identify coils instantly within the yard.
+
+Error Prevention: Ensure correct coil identification during lifting and dispatch.
+
+Cost-Effectiveness: Affordable solution without compromising reliability and performance.

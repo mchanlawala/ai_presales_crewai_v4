@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>AI Pre-Sales Consultant</title>
+<style>
+:root{--navy:#0F1F38;--blue:#2563EB;--blue-l:#EFF6FF;--teal:#0F766E;--teal-l:#F0FDFA;
+--amber:#D97706;--amber-l:#FFFBEB;--green:#16A34A;--green-l:#F0FDF4;
+--red:#DC2626;--red-l:#FEF2F2;--gray-50:#F8FAFC;--gray-100:#F1F5F9;
+--gray-200:#E2E8F0;--gray-400:#94A3B8;--gray-600:#475569;--gray-800:#1E293B;
+--white:#FFFFFF;--sidebar:240px;--header:60px;
+--font:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font);background:var(--gray-50);color:var(--gray-800);height:100vh;display:flex;flex-direction:column;}
+
+/* ── HEADER ── */
+.hdr{height:var(--header);background:var(--navy);display:flex;align-items:center;
+  padding:0 20px;gap:16px;flex-shrink:0;z-index:100;}
+.hdr-logo{font-size:18px;font-weight:700;color:white;display:flex;align-items:center;gap:8px;}
+.hdr-logo span{width:28px;height:28px;background:var(--blue);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;font-size:14px;}
+.hdr-spacer{flex:1;}
+.hdr-badge{font-size:11px;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.8);
+  padding:3px 10px;border-radius:20px;font-weight:500;}
+.hdr-btn{font-size:12px;color:rgba(255,255,255,0.7);background:transparent;border:1px solid rgba(255,255,255,0.2);
+  padding:5px 14px;border-radius:6px;cursor:pointer;transition:.15s;}
+.hdr-btn:hover{background:rgba(255,255,255,0.1);}
+.hdr-btn.active{background:var(--blue);color:white;border-color:var(--blue);}
+
+/* ── SHELL ── */
+.shell{display:flex;flex:1;overflow:hidden;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar);background:white;border-right:1px solid var(--gray-200);
+  display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;}
+.sb-section{padding:12px 8px 4px;font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:1px;color:var(--gray-400);}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:6px;
+  margin:1px 8px;cursor:pointer;font-size:13px;color:var(--gray-600);transition:.12s;}
+.sb-item:hover{background:var(--gray-50);}
+.sb-item.active{background:var(--blue-l);color:var(--blue);font-weight:600;}
+.sb-item.done{color:var(--green);}
+.sb-item.current{color:var(--blue);font-weight:600;}
+.sb-dot{width:8px;height:8px;border-radius:50%;background:var(--gray-200);flex-shrink:0;}
+.sb-dot.done{background:var(--green);}
+.sb-dot.active{background:var(--blue);}
+.sb-dot.error{background:var(--red);}
+.sb-spacer{flex:1;}
+.sb-info{padding:12px;margin:8px;background:var(--gray-50);border-radius:8px;font-size:11px;color:var(--gray-400);}
+.sb-info strong{color:var(--gray-600);display:block;margin-bottom:3px;}
+
+/* ── MAIN ── */
+.main{flex:1;overflow-y:auto;padding:28px 32px;}
+
+/* ── PAGE HEADER ── */
+.page-hdr{margin-bottom:24px;}
+.page-hdr h1{font-size:22px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+.page-hdr p{font-size:14px;color:var(--gray-600);}
+
+/* ── CARDS ── */
+.card{background:white;border:1px solid var(--gray-200);border-radius:10px;padding:20px 24px;margin-bottom:16px;}
+.card-title{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:12px;}
+.card-sub{font-size:12px;color:var(--gray-400);margin-top:4px;}
+
+/* ── FORM ── */
+.form-group{margin-bottom:16px;}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
+textarea,input[type=text],select{width:100%;padding:10px 12px;border:1px solid var(--gray-200);
+  border-radius:8px;font-size:14px;font-family:var(--font);resize:vertical;
+  background:white;color:var(--gray-800);transition:.15s;}
+textarea:focus,input:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+textarea{min-height:120px;}
+
+/* ── BUTTONS ── */
+.btn{padding:9px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;
+  border:none;transition:.15s;display:inline-flex;align-items:center;gap:6px;}
+.btn-primary{background:var(--blue);color:white;}
+.btn-primary:hover{background:#1d4ed8;}
+.btn-primary:disabled{background:var(--gray-400);cursor:not-allowed;}
+.btn-outline{background:white;color:var(--gray-600);border:1px solid var(--gray-200);}
+.btn-outline:hover{border-color:var(--blue);color:var(--blue);}
+.btn-success{background:var(--green);color:white;}
+.btn-success:hover{background:#15803d;}
+.btn-danger{background:var(--red);color:white;}
+.btn-danger:hover{background:#b91c1c;}
+.btn-amber{background:var(--amber);color:white;}
+.btn-amber:hover{background:#b45309;}
+.btn-sm{padding:6px 12px;font-size:12px;}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;}
+
+/* ── PROGRESS BAR ── */
+.progress-wrap{margin:16px 0;}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--gray-600);margin-bottom:6px;}
+.progress-bar{height:8px;background:var(--gray-100);border-radius:4px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--teal));border-radius:4px;transition:width .4s;}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge-blue{background:var(--blue-l);color:var(--blue);}
+.badge-green{background:var(--green-l);color:var(--green);}
+.badge-amber{background:var(--amber-l);color:var(--amber);}
+.badge-red{background:var(--red-l);color:var(--red);}
+.badge-gray{background:var(--gray-100);color:var(--gray-600);}
+
+/* ── STEPS BAR ── */
+.steps{display:flex;gap:0;margin-bottom:28px;background:white;border:1px solid var(--gray-200);border-radius:10px;overflow:hidden;}
+.step{flex:1;text-align:center;padding:12px 8px;border-right:1px solid var(--gray-200);font-size:11px;color:var(--gray-400);}
+.step:last-child{border-right:none;}
+.step.done{color:var(--green);}
+.step.active{color:var(--blue);background:var(--blue-l);font-weight:600;}
+.step-num{font-size:16px;display:block;margin-bottom:2px;}
+
+/* ── QUESTION CARD ── */
+.q-card{border:1px solid var(--gray-200);border-radius:8px;padding:14px 16px;margin-bottom:12px;background:white;}
+.q-label{font-size:12px;font-weight:600;color:var(--navy);margin-bottom:8px;display:flex;gap:8px;align-items:flex-start;}
+.q-num{background:var(--blue);color:white;border-radius:4px;padding:1px 7px;font-size:10px;flex-shrink:0;margin-top:1px;}
+.q-input{width:100%;padding:8px 10px;border:1px solid var(--gray-200);border-radius:6px;
+  font-size:13px;font-family:var(--font);}
+.q-input:focus{outline:none;border-color:var(--blue);}
+
+/* ── DOCUMENT GRID ── */
+.doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
+.doc-card{border:1px solid var(--gray-200);border-radius:8px;padding:14px 16px;background:white;display:flex;flex-direction:column;gap:8px;}
+.doc-card.approved{border-color:var(--green);}
+.doc-card.failed{border-color:var(--red-l);background:var(--red-l);}
+.doc-card-top{display:flex;align-items:flex-start;gap:10px;}
+.doc-num{font-size:11px;font-weight:700;color:var(--blue);background:var(--blue-l);
+  padding:2px 8px;border-radius:4px;flex-shrink:0;}
+.doc-name{font-size:13px;font-weight:600;color:var(--navy);line-height:1.3;}
+.doc-desc{font-size:11px;color:var(--gray-400);}
+.doc-actions{display:flex;gap:6px;flex-wrap:wrap;}
+
+/* ── ALERT ── */
+.alert{padding:12px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;display:flex;align-items:flex-start;gap:10px;}
+.alert-info{background:var(--blue-l);color:var(--blue);border-left:3px solid var(--blue);}
+.alert-success{background:var(--green-l);color:var(--green);border-left:3px solid var(--green);}
+.alert-warning{background:var(--amber-l);color:var(--amber);border-left:3px solid var(--amber);}
+.alert-error{background:var(--red-l);color:var(--red);border-left:3px solid var(--red);}
+
+/* ── SPINNER ── */
+.spinner{width:20px;height:20px;border:3px solid var(--gray-200);border-top-color:var(--blue);
+  border-radius:50%;animation:spin 1s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── TAGS / CHIPS ── */
+.chip{display:inline-flex;padding:4px 10px;background:var(--gray-100);border-radius:20px;
+  font-size:11px;color:var(--gray-600);margin:2px;}
+
+/* ── LOG ── */
+.log{background:var(--gray-800);color:#93C5FD;padding:14px;border-radius:8px;font-size:11px;
+  font-family:'Fira Code',monospace;line-height:1.7;max-height:180px;overflow-y:auto;}
+.log-entry{display:flex;gap:8px;}
+.log-time{color:var(--gray-400);flex-shrink:0;}
+
+/* ── KB EDITOR ── */
+.kb-toolbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+.kb-editor{width:100%;min-height:400px;font-family:monospace;font-size:12px;
+  padding:12px;border:1px solid var(--gray-200);border-radius:8px;background:var(--gray-50);}
+
+/* ── SCROLLABLE ── */
+.scroll-x{overflow-x:auto;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .main{padding:16px;}
+  .doc-grid{grid-template-columns:1fr;}
+  .steps{display:none;}
+}
+</style>
+</head>
+<body>
+<!-- App mounts here -->
+<div id="app">
+  <div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:16px;">
+    <div class="spinner" style="width:40px;height:40px;"></div>
+    <p style="color:var(--gray-400);font-size:14px;">Loading AI Pre-Sales Consultant...</p>
+  </div>
+</div>
+
+<script type="module">
+// ─── API client ───────────────────────────────────────────────────────────────
+const BASE = 'http://localhost:8000/api';
+const api = {
+  start:    (q,h)=>post('/sessions/start',{query:q,industry_hint:h}),
+  get:      (id) =>fetch(`${BASE}/sessions/${id}`).then(r=>r.json()),
+  list:     ()   =>fetch(`${BASE}/sessions`).then(r=>r.json()),
+  answer:   (id,ans)=>post(`/sessions/${id}/answer`,{session_id:id,answers:ans}),
+  skip:     (id) =>post(`/sessions/${id}/skip-questions`,{}),
+  review:   (id,dec,com,fb)=>post(`/sessions/${id}/review`,{session_id:id,decision:dec,comments:com,document_feedback:fb}),
+  publish:  (id) =>post(`/sessions/${id}/publish`,{}),
+  industries:()  =>fetch(`${BASE}/industries`).then(r=>r.json()),
+  createKB: (i,c,d)=>post('/knowledge-base',{industry:i,content:c,description:d}),
+  getKB:    (i)  =>fetch(`${BASE}/knowledge-base/${encodeURIComponent(i)}`).then(r=>r.json()),
+  downloadUrl:(id)=>`${BASE}/sessions/${id}/download`,
+  docUrl:   (id,did)=>`${BASE}/sessions/${id}/document/${did}`,
+  previewUrl:(id,did)=>`${BASE}/sessions/${id}/preview/${did}`,
+  ws:       (id) =>new WebSocket(`ws://localhost:8000/api/ws/${id}`),
+};
+async function post(path,body){
+  const r=await fetch(`${BASE}${path}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!r.ok){const e=await r.json().catch(()=>({detail:r.statusText}));throw new Error(e.detail||'Failed');}
+  return r.json();
+}
+
+// ─── State ────────────────────────────────────────────────────────────────────
+let state = {
+  page: 'intake',   // intake | questions | generating | review | published | kb | history
+  sessionId: null,
+  session: null,
+  progress: {pct:0, step:'', message:''},
+  log: [],
+  answers: {},
+  industries: [],
+  docFeedback: {},
+  reviewComment: '',
+  ws: null,
+  loading: false,
+  error: null,
+};
+
+function setState(patch){ Object.assign(state, patch); render(); }
+function addLog(msg){ state.log = [...state.log.slice(-30), {t:new Date().toLocaleTimeString(), m:msg}]; }
+
+// ─── WebSocket ────────────────────────────────────────────────────────────────
+function connectWS(id){
+  if(state.ws){ try{state.ws.close();}catch(e){} }
+  const ws = api.ws(id);
+  ws.onopen = ()=>{ addLog('WebSocket connected'); ws.send('ping'); setInterval(()=>ws.send('ping'),20000); };
+  ws.onmessage = evt => {
+    if(evt.data==='pong') return;
+    try{
+      const msg = JSON.parse(evt.data);
+      if(msg.type==='state' && msg.data){
+        state.session = msg.data;
+        state.progress = {pct:msg.data.progress||0, step:msg.data.current_step||'', message:''};
+        addLog(`State: ${msg.data.status} (${msg.data.progress}%)`);
+        // Auto-navigate based on status
+        const nav = {questioning:'questions',generating:'generating',reviewing:'review',
+                     approved:'review',published:'published',error:'generating'};
+        if(nav[msg.data.status] && state.page !== nav[msg.data.status]){
+          state.page = nav[msg.data.status];
+        }
+      } else if(msg.type==='progress'){
+        state.progress = {pct:msg.progress, step:msg.step, message:msg.message};
+        addLog(`[${msg.progress}%] ${msg.step}: ${msg.message}`);
+        if(msg.data?.questions){
+          state.session = {...(state.session||{}), clarifying_questions:msg.data.questions, requirements:msg.data.requirements};
+        }
+        // Refresh session periodically
+        if(state.sessionId) api.get(state.sessionId).then(s=>{state.session=s;render();}).catch(()=>{});
+      }
+      render();
+    } catch(e){}
+  };
+  ws.onclose = ()=>{ addLog('WebSocket disconnected'); };
+  state.ws = ws;
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function render(){
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    ${renderHeader()}
+    <div class="shell">
+      ${renderSidebar()}
+      <div class="main">${renderPage()}</div>
+    </div>
+  `;
+  attachEvents();
+}
+
+function renderHeader(){
+  const pages = [
+    {id:'intake',label:'New Session'},
+    {id:'kb',label:'Knowledge Bases'},
+    {id:'history',label:'History'},
+  ];
+  return `
+  <div class="hdr">
+    <div class="hdr-logo"><span>🤖</span>AI Pre-Sales Consultant</div>
+    <div class="hdr-badge">v4.0 · CrewAI + Multi-Agent</div>
+    <div class="hdr-spacer"></div>
+    ${pages.map(p=>`<button class="hdr-btn ${state.page===p.id?'active':''}" onclick="navigate('${p.id}')">${p.label}</button>`).join('')}
+  </div>`;
+}
+
+function renderSidebar(){
+  const s = state.session;
+  const steps = [
+    {id:'intake',     label:'Customer Query',    done:!!s},
+    {id:'questions',  label:'AI Questions',       done:s&&s.user_answers},
+    {id:'generating', label:'Document Generation',done:s&&['reviewing','approved','published'].includes(s?.status)},
+    {id:'review',     label:'Review & Approve',   done:s&&['approved','published'].includes(s?.status)},
+    {id:'published',  label:'Published',          done:s?.status==='published'},
+  ];
+  return `
+  <div class="sidebar">
+    <div class="sb-section">Workflow</div>
+    ${steps.map(st=>{
+      const active = state.page === st.id;
+      const dotCls = st.done ? 'done' : (active ? 'active' : '');
+      return `<div class="sb-item ${active?'active':''} ${st.done&&!active?'done':''}" onclick="navigate('${st.id}')">
+        <div class="sb-dot ${dotCls}"></div>
+        <span>${st.label}</span>
+      </div>`;
+    }).join('')}
+
+    ${s ? `
+    <div class="sb-section" style="margin-top:16px;">Session</div>
+    <div style="padding:0 8px 8px;">
+      <div class="sb-info">
+        <strong>ID: ${state.sessionId}</strong>
+        <span>Status: <span class="badge ${statusBadge(s.status)}">${s.status}</span></span>
+        ${s.industry ? `<span style="margin-top:4px;display:block;">Industry: ${s.industry}</span>` : ''}
+      </div>
+    </div>` : ''}
+
+    <div class="sb-spacer"></div>
+    <div class="sb-section">Navigation</div>
+    <div class="sb-item ${state.page==='kb'?'active':''}" onclick="navigate('kb')">📚 Knowledge Bases</div>
+    <div class="sb-item ${state.page==='history'?'active':''}" onclick="navigate('history')">📋 Session History</div>
+  </div>`;
+}
+
+function renderPage(){
+  switch(state.page){
+    case 'intake':     return renderIntake();
+    case 'questions':  return renderQuestions();
+    case 'generating': return renderGenerating();
+    case 'review':     return renderReview();
+    case 'published':  return renderPublished();
+    case 'kb':         return renderKB();
+    case 'history':    return renderHistory();
+    default:           return renderIntake();
+  }
+}
+
+// ─── PAGES ────────────────────────────────────────────────────────────────────
+
+function renderIntake(){
+  return `
+  <div class="page-hdr">
+    <h1>New Pre-Sales Session</h1>
+    <p>Describe your customer's manufacturing requirements. The AI will extract requirements, ask clarifying questions, and generate 15+ professional pre-sales documents.</p>
+  </div>
+
+  ${renderStepsBar(0)}
+
+  ${state.error ? `<div class="alert alert-error">⚠️ ${state.error}</div>` : ''}
+
+  <div class="card">
+    <div class="card-title">Customer Query</div>
+    <div class="form-group">
+      <label class="form-label">Describe the customer's manufacturing requirements</label>
+      <textarea id="query-input" placeholder="Example: We are a solar panel manufacturer producing 300 MW annually. We use SAP ERP and want to implement MES for production tracking, quality traceability, and OPC UA machine integration across 4 production lines and 20 machine types. We currently track production manually in spreadsheets and expect ROI within 2 years...">${state.savedQuery||''}</textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Industry Hint (optional)</label>
+      <select id="industry-select">
+        <option value="">Auto-detect industry</option>
+        ${(state.industries||[]).map(i=>`<option value="${i.id}">${i.name}</option>`).join('')}
+      </select>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="start-btn" ${state.loading?'disabled':''}>
+        ${state.loading?'<div class="spinner"></div> Starting...':'🚀 Start AI Analysis'}
+      </button>
+    </div>
+  </div>
+
+  <div class="card" style="background:var(--blue-l);border-color:#BFDBFE;">
+    <div class="card-title" style="color:var(--blue);">How it works</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;font-size:13px;">
+      ${[
+        ['🔍','AI Extracts Requirements','CrewAI agents classify industry, extract structured requirements, and identify gaps'],
+        ['❓','Smart Clarifying Questions','Agents generate 4-6 targeted questions to fill information gaps'],
+        ['📄','15+ Documents Generated','Full pre-sales package: BRD, SOW, HLD, Roadmap, ROI, Commercial, and more'],
+      ].map(([icon,title,desc])=>`
+        <div style="text-align:center;padding:12px;">
+          <div style="font-size:28px;margin-bottom:8px;">${icon}</div>
+          <div style="font-weight:600;color:var(--navy);margin-bottom:4px;">${title}</div>
+          <div style="color:var(--gray-600);">${desc}</div>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function renderQuestions(){
+  const s = state.session;
+  const qs = s?.clarifying_questions || [];
+  const req = s?.requirements || {};
+
+  return `
+  <div class="page-hdr">
+    <h1>Clarifying Questions</h1>
+    <p>The AI has analysed your query and needs a few more details to generate the best possible documents. Answer what you can — all questions are optional.</p>
+  </div>
+
+  ${renderStepsBar(1)}
+
+  ${req.industry ? `
+  <div class="card" style="padding:14px 20px;">
+    <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:13px;">
+      <span>🏭 <strong>Industry:</strong> ${req.industry}</span>
+      ${req.product ? `<span>📦 <strong>Product:</strong> ${req.product}</span>` : ''}
+      ${req.production_capacity ? `<span>⚡ <strong>Capacity:</strong> ${req.production_capacity}</span>` : ''}
+      ${req.lines ? `<span>🏗️ <strong>Lines:</strong> ${req.lines}</span>` : ''}
+      ${req.erp ? `<span>💻 <strong>ERP:</strong> ${req.erp}</span>` : ''}
+    </div>
+  </div>` : ''}
+
+  <div class="card">
+    <div class="card-title">Questions from AI Agents <span class="badge badge-blue">${qs.length} questions</span></div>
+    <div style="margin-bottom:4px;font-size:12px;color:var(--gray-400);">Answer to improve document quality. Unanswered questions are fine — agents will use available information.</div>
+    ${qs.length === 0 ? `
+      <div style="padding:24px;text-align:center;color:var(--gray-400);">
+        <div class="spinner" style="margin:0 auto 10px;"></div>
+        <div>Generating questions...</div>
+      </div>` :
+    qs.map((q,i)=>`
+      <div class="q-card">
+        <div class="q-label"><span class="q-num">Q${i+1}</span>${q}</div>
+        <input class="q-input" id="q-${i}" type="text" placeholder="Your answer..." value="${state.answers[q]||''}"/>
+      </div>`).join('')}
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" id="submit-answers-btn">✅ Submit Answers & Generate Documents</button>
+    <button class="btn btn-outline" id="skip-btn">⏭ Skip — Generate with Current Info</button>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <div class="card-title">Live Progress</div>
+    ${renderProgressBar()}
+    ${renderLog()}
+  </div>`;
+}
+
+function renderGenerating(){
+  const s = state.session;
+  const p = state.progress;
+  const pct = p.pct || s?.progress || 0;
+
+  const docSteps = [
+    'Debating requirements','Loading knowledge base','Generating BRD',
+    'AS-IS / TO-BE diagrams','Sequence diagram','High-Level Design',
+    'Architecture design','Architecture diagram','Digital Vision',
+    'Process Flow document','PoC Plan','Commercial Proposal',
+    'Risk Assessment','ROI estimation','Implementation Roadmap',
+    'Infrastructure document','ROI Business Case','Final Proposal / SOW'
+  ];
+  const currentStepIdx = Math.floor((pct / 100) * docSteps.length);
+
+  return `
+  <div class="page-hdr">
+    <h1>Generating Documents</h1>
+    <p>AI agents are generating your complete pre-sales package. This takes 5-15 minutes depending on your LLM setup.</p>
+  </div>
+
+  ${renderStepsBar(2)}
+
+  <div class="card">
+    <div class="card-title">Generation Progress</div>
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span>${p.step || s?.current_step || 'Processing...'}</span>
+        <span style="font-weight:700;color:var(--blue);">${pct}%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>
+    ${p.message ? `<div style="font-size:13px;color:var(--gray-600);margin-top:8px;">${p.message}</div>` : ''}
+  </div>
+
+  <div class="card">
+    <div class="card-title">Document Generation Pipeline — 18 Steps</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
+      ${docSteps.map((step,i)=>{
+        const done = i < currentStepIdx;
+        const cur  = i === currentStepIdx;
+        return `<div style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:6px;font-size:12px;
+          background:${done?'var(--green-l)':cur?'var(--blue-l)':'var(--gray-50)'};
+          color:${done?'var(--green)':cur?'var(--blue)':'var(--gray-400)'};">
+          <span>${done?'✓':cur?'⟳':'○'}</span>
+          <span>${step}</span>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Agent Activity Log</div>
+    ${renderLog()}
+  </div>`;
+}
+
+function renderReview(){
+  const s = state.session;
+  const docs = s?.documents || [];
+  const generated = docs.filter(d=>d.status==='generated');
+  const approved  = docs.filter(d=>d.approved);
+
+  return `
+  <div class="page-hdr">
+    <h1>Review & Approve Documents</h1>
+    <p>Review each generated document. You can preview, download individually, leave feedback, and approve. Final approval publishes the complete package.</p>
+  </div>
+
+  ${renderStepsBar(3)}
+
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
+    ${[
+      ['📄', 'Generated', generated.length, 'blue'],
+      ['✅', 'Approved', approved.length, 'green'],
+      ['❌', 'Pending', generated.length - approved.length, 'amber'],
+    ].map(([icon,label,val,color])=>`
+      <div class="card" style="text-align:center;padding:16px;">
+        <div style="font-size:24px;">${icon}</div>
+        <div style="font-size:28px;font-weight:700;color:var(--${color});">${val}</div>
+        <div style="font-size:12px;color:var(--gray-400);">${label}</div>
+      </div>`).join('')}
+  </div>
+
+  ${s?.status === 'approved' ? `
+  <div class="alert alert-success">✅ All documents approved! Click "Publish Package" to finalise.</div>` : ''}
+
+  <div class="card">
+    <div class="card-title">Document Review</div>
+    <div class="doc-grid">
+      ${docs.map(doc=>renderDocCard(doc)).join('')}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Overall Decision</div>
+    <div class="form-group">
+      <label class="form-label">Review Comments (optional)</label>
+      <textarea id="review-comment" style="min-height:80px;" placeholder="Any overall comments or requested changes...">${state.reviewComment||''}</textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-success" id="approve-all-btn">✅ Approve All & Publish</button>
+      <button class="btn btn-amber" id="request-changes-btn">📝 Request Changes</button>
+      <button class="btn btn-outline" id="download-zip-btn" ${s?.zip_path?'':'disabled'}>⬇️ Download Package</button>
+    </div>
+  </div>`;
+}
+
+function renderDocCard(doc){
+  const isGenerated = doc.status === 'generated';
+  const isFailed    = doc.status === 'failed';
+  const isApproved  = doc.approved;
+  return `
+  <div class="doc-card ${isApproved?'approved':''} ${isFailed?'failed':''}">
+    <div class="doc-card-top">
+      <div class="doc-num">${doc.num}</div>
+      <div>
+        <div class="doc-name">${doc.name}</div>
+        <div class="doc-desc">${doc.description}</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      ${isApproved ? '<span class="badge badge-green">✓ Approved</span>' :
+        isFailed   ? '<span class="badge badge-red">✗ Failed</span>' :
+                     '<span class="badge badge-blue">Ready</span>'}
+      ${doc.feedback ? `<span style="font-size:11px;color:var(--gray-400);">${doc.feedback}</span>` : ''}
+    </div>
+    ${isGenerated ? `
+    <div class="doc-actions">
+      <a href="${api.previewUrl(state.sessionId, doc.id)}" target="_blank" class="btn btn-outline btn-sm">👁 Preview</a>
+      <a href="${api.docUrl(state.sessionId, doc.id)}" download class="btn btn-outline btn-sm">⬇ Download</a>
+      ${!isApproved ? `<button class="btn btn-success btn-sm" onclick="approveDoc('${doc.id}')">✓ Approve</button>` : ''}
+    </div>` : `<div style="font-size:11px;color:var(--red);padding:4px 0;">Document generation failed for this item.</div>`}
+    ${!isApproved && isGenerated ? `
+    <input type="text" class="q-input" placeholder="Optional feedback for this document..."
+      id="fb-${doc.id}" value="${state.docFeedback[doc.id]||''}"
+      style="font-size:11px;padding:5px 8px;"
+      onchange="state.docFeedback['${doc.id}']=this.value"/>` : ''}
+  </div>`;
+}
+
+function renderPublished(){
+  const s = state.session;
+  const docs = s?.documents || [];
+  return `
+  <div class="page-hdr">
+    <h1>✅ Package Published!</h1>
+    <p>Your pre-sales document package is ready. Download the complete ZIP or individual documents.</p>
+  </div>
+
+  ${renderStepsBar(4)}
+
+  <div class="card" style="background:var(--green-l);border-color:#BBF7D0;text-align:center;padding:32px;">
+    <div style="font-size:48px;margin-bottom:12px;">🎉</div>
+    <h2 style="color:var(--green);margin-bottom:8px;">Pre-Sales Package Ready</h2>
+    <p style="color:var(--gray-600);margin-bottom:20px;">${docs.filter(d=>d.status==='generated').length} professional documents generated for ${s?.industry||'Manufacturing'}</p>
+    <div class="btn-row" style="justify-content:center;">
+      <a href="${api.downloadUrl(state.sessionId)}" class="btn btn-success">⬇️ Download Complete Package (ZIP)</a>
+      <button class="btn btn-outline" onclick="navigate('intake')">🆕 New Session</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Generated Documents</div>
+    <div class="doc-grid">
+      ${docs.filter(d=>d.status==='generated').map(doc=>`
+        <div class="doc-card approved">
+          <div class="doc-card-top">
+            <div class="doc-num">${doc.num}</div>
+            <div><div class="doc-name">${doc.name}</div><div class="doc-desc">${doc.description}</div></div>
+          </div>
+          <div class="doc-actions">
+            <a href="${api.previewUrl(state.sessionId, doc.id)}" target="_blank" class="btn btn-outline btn-sm">👁 Preview</a>
+            <a href="${api.docUrl(state.sessionId, doc.id)}" download class="btn btn-outline btn-sm">⬇ Download</a>
+          </div>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function renderKB(){
+  return `
+  <div class="page-hdr">
+    <h1>Knowledge Base Manager</h1>
+    <p>Create and manage industry-specific knowledge bases. Each industry gets its own knowledge base that the AI agents use to generate domain-accurate documents.</p>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+    <div>
+      <div class="card">
+        <div class="card-title">Create / Update Knowledge Base</div>
+        <div class="form-group">
+          <label class="form-label">Industry Name</label>
+          <input id="kb-industry" type="text" placeholder="e.g. Steel, Automotive, Pharma, Logistics"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <input id="kb-desc" type="text" placeholder="Brief description of this industry domain"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Knowledge Base Content</label>
+          <textarea id="kb-content" class="kb-editor" placeholder="Enter the industry knowledge base in plain text.
+
+Include:
+- Manufacturing process steps (numbered, detailed)
+- Recommended MES/software modules
+- Integration patterns and protocols
+- Regulatory/compliance requirements
+- ROI benchmarks (payback periods, OEE improvements)
+- Common pain points and solutions
+- Discovery questions for pre-sales
+- Technology stack recommendations
+
+The richer the content, the better the proposals."></textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="save-kb-btn">💾 Save Knowledge Base</button>
+          <button class="btn btn-outline" id="load-solar-btn">📋 Load Solar Template</button>
+        </div>
+        <div id="kb-status"></div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-title">Available Industries</div>
+        <div id="kb-industry-list"><div class="spinner"></div></div>
+      </div>
+      <div class="card" style="margin-top:12px;background:var(--amber-l);border-color:#FDE68A;">
+        <div class="card-title" style="color:var(--amber);">💡 Knowledge Base Tips</div>
+        <ul style="font-size:13px;color:var(--gray-600);padding-left:16px;line-height:2;">
+          <li>Write in clear, structured plain text</li>
+          <li>Use numbered lists for process steps</li>
+          <li>Include specific benchmarks (OEE %, payback months)</li>
+          <li>Add compliance requirements (ALMM, GMP, ISO)</li>
+          <li>The more detail, the better the proposal quality</li>
+          <li>Minimum 500 words recommended; 2000+ is ideal</li>
+        </ul>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderHistory(){
+  return `
+  <div class="page-hdr">
+    <h1>Session History</h1>
+    <p>All previous pre-sales sessions.</p>
+  </div>
+  <div id="history-list"><div class="spinner"></div></div>`;
+}
+
+// ─── Helper renders ───────────────────────────────────────────────────────────
+
+function renderStepsBar(active){
+  const steps = ['📝 Query','❓ Questions','⚙️ Generate','🔍 Review','✅ Publish'];
+  return `<div class="steps">
+    ${steps.map((s,i)=>`<div class="step ${i===active?'active':''} ${i<active?'done':''}">
+      <span class="step-num">${i<active?'✓':i+1}</span>${s}
+    </div>`).join('')}
+  </div>`;
+}
+
+function renderProgressBar(){
+  const p = state.progress;
+  const s = state.session;
+  const pct = p.pct || s?.progress || 0;
+  return `<div class="progress-wrap">
+    <div class="progress-label">
+      <span>${p.step || s?.current_step || 'Waiting...'}</span>
+      <span style="font-weight:700;color:var(--blue);">${pct}%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    ${p.message ? `<div style="font-size:12px;color:var(--gray-400);margin-top:6px;">${p.message}</div>` : ''}
+  </div>`;
+}
+
+function renderLog(){
+  return `<div class="log">
+    ${state.log.length===0 ? '<span style="color:var(--gray-400);">Waiting for activity...</span>' :
+      state.log.map(l=>`<div class="log-entry"><span class="log-time">${l.t}</span><span>${l.m}</span></div>`).join('')}
+  </div>`;
+}
+
+function statusBadge(status){
+  const m={analyzing:'badge-blue',questioning:'badge-amber',generating:'badge-blue',
+           reviewing:'badge-amber',approved:'badge-green',published:'badge-green',error:'badge-red'};
+  return m[status]||'badge-gray';
+}
+
+// ─── Event handlers ───────────────────────────────────────────────────────────
+
+function attachEvents(){
+  // Intake
+  const startBtn = document.getElementById('start-btn');
+  if(startBtn) startBtn.onclick = async () => {
+    const q = document.getElementById('query-input')?.value?.trim();
+    const h = document.getElementById('industry-select')?.value || null;
+    if(!q){ setState({error:'Please enter a customer query.'}); return; }
+    setState({loading:true, error:null, savedQuery:q, log:[]});
+    try{
+      const r = await api.start(q, h);
+      setState({sessionId:r.session_id, loading:false, page:'questions', answers:{}});
+      connectWS(r.session_id);
+    } catch(e){
+      setState({loading:false, error:e.message});
+    }
+  };
+
+  // Questions
+  const submitBtn = document.getElementById('submit-answers-btn');
+  if(submitBtn) submitBtn.onclick = async () => {
+    const qs = state.session?.clarifying_questions || [];
+    const ans = {};
+    qs.forEach((q,i)=>{
+      const v = document.getElementById(`q-${i}`)?.value?.trim();
+      if(v) ans[q] = v;
+    });
+    state.answers = ans;
+    try{
+      await api.answer(state.sessionId, ans);
+      setState({page:'generating'});
+    } catch(e){ setState({error:e.message}); }
+  };
+
+  const skipBtn = document.getElementById('skip-btn');
+  if(skipBtn) skipBtn.onclick = async () => {
+    try{
+      await api.skip(state.sessionId);
+      setState({page:'generating'});
+    } catch(e){ setState({error:e.message}); }
+  };
+
+  // Review
+  const approveAllBtn = document.getElementById('approve-all-btn');
+  if(approveAllBtn) approveAllBtn.onclick = async () => {
+    const comments = document.getElementById('review-comment')?.value || '';
+    try{
+      await api.review(state.sessionId, 'approve', comments, state.docFeedback);
+      await api.publish(state.sessionId);
+      const s = await api.get(state.sessionId);
+      setState({session:s, page:'published'});
+    } catch(e){ setState({error:e.message}); }
+  };
+
+  const changesBtn = document.getElementById('request-changes-btn');
+  if(changesBtn) changesBtn.onclick = async () => {
+    const comments = document.getElementById('review-comment')?.value || '';
+    try{
+      await api.review(state.sessionId, 'request_changes', comments, state.docFeedback);
+      addLog('Changes requested — documents flagged for revision');
+      render();
+    } catch(e){ setState({error:e.message}); }
+  };
+
+  const dlBtn = document.getElementById('download-zip-btn');
+  if(dlBtn) dlBtn.onclick = () => { window.open(api.downloadUrl(state.sessionId), '_blank'); };
+
+  // KB
+  const saveKBBtn = document.getElementById('save-kb-btn');
+  if(saveKBBtn) saveKBBtn.onclick = async () => {
+    const ind  = document.getElementById('kb-industry')?.value?.trim();
+    const cont = document.getElementById('kb-content')?.value?.trim();
+    const desc = document.getElementById('kb-desc')?.value?.trim();
+    if(!ind || !cont){ document.getElementById('kb-status').innerHTML='<div class="alert alert-error">Please enter industry name and content.</div>'; return; }
+    try{
+      await api.createKB(ind, cont, desc);
+      document.getElementById('kb-status').innerHTML='<div class="alert alert-success">✅ Knowledge base saved!</div>';
+      loadKBList();
+    } catch(e){
+      document.getElementById('kb-status').innerHTML=`<div class="alert alert-error">Error: ${e.message}</div>`;
+    }
+  };
+
+  const loadSolarBtn = document.getElementById('load-solar-btn');
+  if(loadSolarBtn) loadSolarBtn.onclick = async () => {
+    try{
+      const kb = await api.getKB('solar');
+      document.getElementById('kb-industry').value = 'Solar';
+      document.getElementById('kb-content').value  = kb.content;
+    } catch(e){ alert('Could not load solar KB: ' + e.message); }
+  };
+
+  // KB industry list + history (async populate)
+  if(document.getElementById('kb-industry-list')) loadKBList();
+  if(document.getElementById('history-list'))     loadHistory();
+
+  // Review comment tracking
+  const rc = document.getElementById('review-comment');
+  if(rc) rc.onchange = () => { state.reviewComment = rc.value; };
+}
+
+async function approveDoc(docId){
+  const fb = document.getElementById(`fb-${docId}`)?.value || '';
+  state.docFeedback[docId] = fb;
+  try{
+    await api.approveDoc(state.sessionId, docId, fb);
+    const s = await api.get(state.sessionId);
+    setState({session:s});
+  } catch(e){ alert(e.message); }
+}
+window.approveDoc = approveDoc;
+
+async function navigate(page){ setState({page, error:null}); }
+window.navigate = navigate;
+
+async function loadKBList(){
+  const el = document.getElementById('kb-industry-list');
+  if(!el) return;
+  try{
+    const industries = await api.industries();
+    el.innerHTML = industries.map(i=>`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gray-100);">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--navy);">${i.name}</div>
+          <div style="font-size:11px;color:var(--gray-400);">${i.description}</div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="loadIntoEditor('${i.id}')">Load</button>
+      </div>`).join('');
+  } catch(e){ el.innerHTML=`<div class="alert alert-error">Could not load industries: ${e.message}</div>`; }
+}
+
+async function loadHistory(){
+  const el = document.getElementById('history-list');
+  if(!el) return;
+  try{
+    const sessions = await api.list();
+    if(!sessions.length){ el.innerHTML='<div class="alert alert-info">No sessions yet.</div>'; return; }
+    el.innerHTML = `<div class="card">
+      ${sessions.slice().reverse().map(s=>`
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--gray-100);">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--navy);">${(s.customer_query||'').slice(0,80)}...</div>
+            <div style="font-size:11px;color:var(--gray-400);">ID: ${s.session_id} · ${s.industry||'?'} · <span class="badge ${statusBadge(s.status)}">${s.status}</span></div>
+          </div>
+          <div style="display:flex;gap:6px;">
+            ${s.status==='published'?`<a href="${api.downloadUrl(s.session_id)}" class="btn btn-success btn-sm">⬇ Download</a>`:''}
+            <button class="btn btn-outline btn-sm" onclick="resumeSession('${s.session_id}')">Resume</button>
+          </div>
+        </div>`).join('')}
+    </div>`;
+  } catch(e){ el.innerHTML=`<div class="alert alert-error">Could not load history: ${e.message}</div>`; }
+}
+window.loadHistory = loadHistory;
+
+async function loadIntoEditor(industry){
+  try{
+    const kb = await api.getKB(industry);
+    document.getElementById('kb-industry').value = industry;
+    document.getElementById('kb-content').value  = kb.content;
+  } catch(e){ alert('Could not load: ' + e.message); }
+}
+window.loadIntoEditor = loadIntoEditor;
+
+async function resumeSession(sid){
+  state.sessionId = sid;
+  const s = await api.get(sid);
+  state.session = s;
+  connectWS(sid);
+  const nav = {questioning:'questions',generating:'generating',reviewing:'review',
+               approved:'review',published:'published'};
+  state.page = nav[s.status] || 'questions';
+  render();
+}
+window.resumeSession = resumeSession;
+
+// ─── Init ────────────────────────────────────────────────────────────────────
+(async function init(){
+  try{
+    state.industries = await api.industries();
+  } catch(e){ /* backend not running yet */ }
+  render();
+})();
+</script>
+</body>
+</html>

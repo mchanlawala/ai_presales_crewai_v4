@@ -1,0 +1,652 @@
+# Solar MES & Manufacturing Knowledge Base — AI-Native MES, PODISE, APS, Agentic AI
+# Version 2.0 | Enhanced with domain depth for proposal generation
+# Source: Industry expertise, ALMM/RLMM compliance, Waaree/Goldi/Rayzon operations
+
+---
+
+## PART A: SOLAR MANUFACTURING DOMAIN KNOWLEDGE
+
+### A1. Solar Panel Technology Landscape (2025)
+Current technology mix in Indian market (ALMM List-I as of 2025):
+- PERC (Passivated Emitter Rear Cell): ~59% of capacity; efficiency 20-21.5%
+- TOPCon (Tunnel Oxide Passivated Contact): ~28% and growing fast; efficiency 23-24.5%; leading tech for 2025-2027
+- HJT (Heterojunction Technology): ~5%; efficiency 24-25%; premium tier
+- Bifacial modules: 40-60% extra energy from rear surface; doubles traceability needs
+- Half-cut cells: Reduces resistive losses by 50%; requires different MES routing logic
+- M10 / G12 wafer sizes: ~80% of Indian installed capacity; affects laminator batch sizes
+
+### A2. India Solar Manufacturing Context (ALMM/RLMM Compliance)
+- ALMM List-I (Modules): Mandatory since April 2024; 119.8 GW enlisted capacity (Oct 2025)
+- ALMM List-II (Cells): Mandatory from June 2026; MES must capture cell-level genealogy
+- RLMM (Revised List of Models and Manufacturers): For wind; similar traceability principles
+- Compliance requirements for MES:
+  * Serial number generation at cell and module level
+  * Batch genealogy from ingot/wafer lot to finished module
+  * Quality test results stored per serial number (flash, EL, Hi-Pot)
+  * Traceability document generation for MNRE audits
+  * BIS certification data linkage
+  * Export documentation (COC - Certificate of Compliance per pallet)
+- Key manufacturers: Waaree (~22.3 GW module capacity), Goldi Solar, Rayzon (6 GW→13 GW by 2026)
+  Adani Solar, Tata Power Solar, Premier Energies, Vikram Solar
+
+### A3. Solar Manufacturing Process — Detailed 11-Step Journey
+
+#### Phase 0: Factory Planning Systems Integration
+- ERP (SAP S/4HANA or SAP ECC): Production orders, BOM, routings, procurement, finance
+- MES: Real-time orchestration, traceability, quality, OEE
+- WMS (Warehouse Management): Dock-in to dock-out, LPN scanning, route-based loading
+- APS/PODISE: Advanced production order design and intelligent scheduling
+- ALMM compliance module: Serial number registration, COC generation
+
+#### Phase 1: Upstream (Silicon to Wafer)
+Step 1: Silicon Ingot Production
+  - Raw material: High-purity polysilicon (>99.9999% purity via Siemens process)
+  - Process: Czochralski monocrystalline growth at >1400°C; typically 8-12 hours per ingot
+  - MES data: Ingot ID, pull speed, temperature profile, weight, resistivity measurement
+  - Quality: Minority carrier lifetime, resistivity (Ω·cm), oxygen/carbon content
+  - Typical lot size: 1 ingot = 200-400 wafers
+
+Step 2: Wafer Slicing
+  - Equipment: Diamond wire saw (DWS); wire diameter 60-80 µm
+  - Parameters: Wire speed, tension, slurry flow, table feed rate
+  - Output: 160-200 µm wafers; M10 (182mm) or G12 (210mm) formats
+  - MES data: Wire consumption, kerf loss %, wafer thickness (measured every 5th wafer)
+  - Quality: TTV (Total Thickness Variation) <15 µm; bow/warp <1mm; micro-crack scan
+  - Throughput: ~800-1200 wafers/hour per machine
+
+#### Phase 2: Midstream (Cell Fabrication)
+Step 3: Texturization
+  - Chemical: KOH/IPA wet etch for monocrystalline; HF/HNO3 for polycrystalline
+  - Target: Pyramid height 3-5 µm; reflectance <12%
+  - MES data: Chemical concentration, etch time, temperature, bath count
+
+Step 4: Doping / PN Junction Formation
+  - PERC: Phosphorus POCl3 diffusion at 850-950°C; sheet resistance 65-100 Ω/sq
+  - TOPCon: Boron/phosphorus doping; tunnel oxide growth at ~1.5nm
+  - MES data: Tube ID, temperature profile, gas flows, sheet resistance (4-probe test)
+
+Step 5: Anti-Reflective Coating (ARC)
+  - Process: PECVD (Plasma Enhanced Chemical Vapour Deposition) SiN:H
+  - Parameters: RF power, gas ratio (SiH4/NH3), pressure, temperature
+  - Target: Refractive index 2.0-2.1; color dark blue for monocrystalline
+
+Step 6: Metallization (Screen Printing)
+  - Materials: Silver paste (front fingers/busbars), Aluminum paste (rear BSF) or silver-coated copper
+  - Lines: 5BB → 9BB → 16BB evolution; impacts cell efficiency and module yield
+  - MES data: Paste weight per cell, print speed, squeegee pressure, paste lot traceability
+
+Step 7: Cell Sorting & Testing
+  - Equipment: Flash tester (Spire, Sinton, h.a.l.m)
+  - Measurements: Isc, Voc, Pmax, FF, Eta; measured at STC (25°C, AM1.5, 1000W/m²)
+  - Sorting: Cells binned by efficiency (e.g., A, B, C grade) and current-matched for stringing
+  - EL Test: Electroluminescence imaging at cell level for micro-crack, broken finger detection
+  - Throughput: 3000-5000 cells/hour per tester
+  - MES: Cell serial number or wafer lot → flash test result → bin assignment
+
+#### Phase 3: Downstream (Module Assembly)
+Step 8: Module Design & Bill of Materials
+  - Inputs: Cells (60/72/144 half-cut), Glass (3.2mm tempered low-iron), EVA/POE encapsulant
+  - Backsheet (TPT, TPE) or 2nd glass (bifacial), Aluminum frame, Junction box (IP68), MC4 connectors
+  - BOM must be traceable: Glass lot, EVA lot, cell lot, frame lot → module serial number
+  - MES role: BOM explosion per work order; lot reservation and issuance
+
+Step 9: Cell Stringing & Soldering
+  - Equipment: High-speed automatic stringer (Teamtechnik, Somont, NPC)
+  - Process: Copper ribbon soldering at 180-200°C; 3-5 cells per string, 20-24 strings per module
+  - Speed: 3000-5000 strings/hour; vision inspection for misalignment, solder quality
+  - MES: Machine ID, ribbon lot, solder temperature, string test result (continuity check)
+  - AI-AOI: Goldi Solar uses AI-powered AOI at 10,000+ cells/hour for defect detection
+
+Step 10: Layup & Lamination
+  - Sequence: Glass → EVA sheet → cell matrix → EVA sheet → backsheet (or 2nd glass)
+  - Pre-lamination EL test: AI-powered; identifies micro-cracks before lamination (saves cost)
+  - Laminator: Triple-chamber laminator; double-sided heating at 145-155°C; cycle 18-25 min
+  - MES: Chamber ID, temperature/pressure profiles, lamination time, peel strength test lot
+  - Batch sizes: 4-12 panels per laminator batch; MES must handle batch splitting
+
+Step 11: Framing, Junction Box, Final Test
+  - Framing: Aluminum (6063-T5 or 6005-T5) or stainless steel; corner keys; adhesive sealant
+  - Junction Box: IP68 rated; 3 bypass diodes; MC4 connectors; potting compound
+  - Final QC tests (all results stored per module serial number):
+    * Flash Test (STC): Pmax, Voc, Isc, FF, efficiency; must match bin tolerance ±5W
+    * EL Test (final): Detect lamination-induced micro-cracks, cell breakage
+    * Hi-Pot (Dielectric test): 1000V DC + 2×Voc; insulation resistance >100 MΩ
+    * Wet Leakage: Optional; simulates rain conditions
+    * Visual Inspection: Scratches, bubbles, color mismatch, frame alignment
+  - Serialization: Laser etching or label print of module serial number + QR code
+  - ALMM: All test results linked to module serial for MNRE compliance database
+
+---
+
+## PART B: MES MODULE REQUIREMENTS (SOLAR-SPECIFIC)
+
+### B1. Production Order Management
+- Sales Order → ATP check → MRP → Planned Order → Production Order (automated, <2 seconds via PODISE)
+- BOM explosion with technology-specific variants (PERC vs TOPCon vs Bifacial)
+- Half-cut module: Double the cell count → different BOM structure
+- Lot-size constraints: Laminator batch = 4-12 panels; flash tester batch = 1 panel; stringer = string
+- Work center capacity constraints respected in scheduling
+- Production order status: Created → Released → In Progress → Completed → Confirmed in SAP
+
+### B2. Shop Floor Data Collection (SFDC)
+- Sources: OPC UA (modern PLC), Modbus TCP (older machines), file/Excel (manual upload), TCP socket
+- Data frequency: Real-time (1-5 seconds) for critical parameters; minute-level for dashboards
+- PDCA cycle: Each operation has a Production Declaration In (PDI) and Out (PDO)
+- PDI captures: Operation start, machine ID, operator ID, material lot, quantity in
+- PDO captures: Quantity good, quantity scrap, defect reason code, operation end time
+
+### B3. Quality Management System (QMS)
+- In-process quality gates at every phase (not just final test)
+- Statistical Process Control (SPC): Cpk >1.33 target for critical parameters
+- Defect classification: IEC 61215 / IEC 61730 compliant categories
+- Solar-specific quality parameters:
+  * Cell sorting consistency (standard deviation <0.05A for current matching)
+  * Lamination void detection (EL dark area <0.5% of active area)
+  * Module efficiency within ±3% of nameplate
+  * Degradation warranty: <0.5%/year (TOPCon) vs <0.55%/year (PERC)
+- NCMR (Non-Conformance Material Report): Auto-generated on defect threshold breach
+- First Pass Yield (FPY) tracking per operation, line, shift, day, product type
+- Root cause analysis (RCA) workflow with 8D problem-solving integration
+
+### B4. Material Genealogy & Traceability
+- Full genealogy tree: Polysilicon lot → Ingot ID → Wafer lot → Cell lot → Module serial
+- Reverse traceability: From any module serial → all input materials (critical for recalls)
+- ALMM compliance: Module serial + all test results must be uploadable to MNRE portal
+- Certificate of Compliance (COC): Auto-generated PDF per pallet/shipment
+- Expiry management: EVA/backsheet have shelf life; MES must flag expired material
+- Quarantine management: Failed material held with MES status; disposition workflow
+
+### B5. OEE (Overall Equipment Effectiveness) Dashboard
+- OEE = Availability × Performance × Quality
+- Target (world class): >85% OEE per line
+- Availability: Planned time vs. actual run time; downtime reasons logged by operator
+- Performance: Ideal cycle time vs. actual cycle time; speed loss detection
+- Quality: Good units / total units produced (includes scrap at each operation)
+- OEE by machine, line, shift, product type, time period
+- Downtime Pareto: Top 5 downtime reasons per week; trend analysis
+- Real-time OEE alerts: OEE drops below 80% → supervisor notification
+
+### B6. Equipment Integration Architecture
+- Layer model:
+  L0: Physical machines (stringers, laminators, testers)
+  L1: PLCs/SCADA (Siemens S7, Allen Bradley, Mitsubishi)
+  L2: OPC UA Server (Ignition, Kepware, or machine-native)
+  L3: MES (integration via OPC UA Client or REST API)
+  L4: ERP (SAP S/4HANA)
+- OPC UA connectivity: Tag mapping, namespace setup, subscription model
+- Solar-specific machine integration:
+  * Flash tester → MES: IV curve data, Pmax, Voc, Isc, FF, temperature, irradiance
+  * EL tester → MES: Image classification result (Pass/Fail + defect type), image storage path
+  * Laminator → MES: Cycle start/end, temperature/pressure profile, operator confirmation
+  * Stringer → MES: String count, ribbon consumption, speed, AOI result
+  * Hi-Pot → MES: Test voltage, insulation resistance value, Pass/Fail
+- Data buffering: Local edge device stores data during connectivity loss; sync on reconnect
+
+---
+
+## PART C: PODISE — PRODUCTION ORDER DESIGN & INTELLIGENT SCHEDULING ENGINE
+
+### C1. Problem Statement
+Traditional SAP PP MRP has critical limitations for solar manufacturing:
+- Cannot handle solar-specific lot-size constraints (laminator: 4-12 panels; flash tester: 1; packaging: 30)
+- Batch MRP runs hourly/daily — too slow for real-time sales order response
+- Cannot split lots intelligently across work centers with different batch sizes
+- Half-cut cells: Different routing → separate work orders not automatically linked
+- Bifacial modules: Glass-glass → different laminator parameters → must schedule separately
+- Rush orders break existing schedules without intelligent re-prioritization
+- SAP does not speak "panel" at cell/stringer/laminator granularity during intraday
+
+### C2. PODISE Core Capabilities
+Real-time Order Processing:
+- Sales Order received (VA01 or API) → PODISE processes in <2 seconds
+- ATP (Available to Promise) check: Finished goods, semi-finished, raw materials
+- If ATP fails: Triggers material requirements calculation and shortage report
+- Planned Order → Production Order conversion: Automated for MTO (Make to Order)
+
+Lot Splitting Intelligence:
+- Decomposes production order qty into operation-level batches
+- Laminator: Max 12 panels per batch → qty 144 → 12 batches of 12
+- Flash tester: 1 panel at a time → sequential; parallelism across testers calculated
+- Packaging: 30 panels per pallet → auto-generates packaging work orders
+- Half-cut modules: Automatically doubles cell count, adjusts stringer work orders
+
+Scheduling Engine:
+- Backward scheduling: From customer delivery date backward through routings
+- Forward scheduling: If backward scheduling violates today → forward from now
+- Shift calendars: Public holidays, planned maintenance, shift patterns respected
+- Planned downtime windows excluded from capacity calculation
+- Operation-level delays flagged with reason code and impact on delivery date
+- Customer priority: High-priority (govt tenders, penalty clauses) orders scheduled first
+- Gantt chart: Generated in real time; push to Angular portal via WebSocket
+
+APS (Advanced Planning & Scheduling) Features:
+- Finite capacity scheduling: Each work center has capacity limit respected
+- Bottleneck analysis: Identifies constraining work center (often laminator or flash tester)
+- Multi-objective optimization: Balance throughput, on-time delivery, WIP minimization
+- Constraint-based scheduling: Respects resource calendars, tooling, operator certifications
+- Real-time re-scheduling: On breakdown, material shortage, rush order → rescheduled in <30 seconds
+- Scenario planning: "What if" simulation before confirming schedule changes
+
+### C3. PODISE Integration Points
+- Input from SAP: Sales orders (VA01/REST), customer master, BOM, routings, work center capacities
+- Output to SAP: Production orders (CO01/CO41), operation confirmations (CO11N), GR (MIGO)
+- Output to MES: Released production orders, work center schedule, Gantt data
+- Output to WMS: Material requirement for staging; finished goods storage instruction
+- Real-time events: Kafka topics for order events (created, released, delayed, completed)
+
+### C4. PODISE Data Requirements
+- Work center master: Shift calendar, capacity (panels/hour), break times, planned downtime
+- BOM (Technology-specific): PERC 60-cell, TOPCon 72-cell, Bifacial half-cut 144-cell
+- Routing: Operation sequence, setup time, run time per unit, fixed lot size per operation
+- Material master: Procurement type, lead time, min/max lot size, shelf life
+- Customer priorities: Priority class per sales order
+
+---
+
+## PART D: PRODUCTION TRACKING AGENT (PDI/PDO)
+
+### D1. Data Ingestion Sources
+1. OPC UA (primary): Real-time machine data; subscription model; 1-5 second refresh
+2. MQTT: IoT sensors (temperature, humidity, vibration); lightweight protocol
+3. TCP socket: Legacy machine direct connection; line-by-line data parsing
+4. File watcher: Excel/CSV upload from machines without digital interface; watched folder
+5. REST API: Quality system data push; external instrument data
+6. Manual entry: Operator mobile app; tablet-based data entry at work station
+
+### D2. PDI Record Structure
+- Operation ID (MES work order operation)
+- Work center / Machine ID
+- Operator ID + Certification check
+- Material lot(s) consumed
+- Quantity declared in (raw)
+- Timestamp start / end
+- Machine parameters (operation-specific: temperature, speed, etc.)
+- Batch ID (for operations with batch sizes < order quantity)
+
+### D3. PDO Record Structure
+- Quantity good (passed QC or QC-free operation)
+- Quantity scrap with defect reason codes (standardized per operation)
+- Rework quantity with rework reason
+- Operation-level yield %
+- Quality test results (if operation includes testing)
+- Next operation routing decision (based on quality result)
+
+### D4. Alerts & Analytics
+- Scrap rate alert: Threshold per operation (e.g., >2% at stringing → alert supervisor)
+- Cycle time alert: Operation taking >150% of standard time → machine issue flag
+- Auto-downtime inference: No PDI for >15 minutes → machine down event created
+- AI insights: LangChain4j + Ollama (Llama 3.2) generates natural language:
+  "Stringer #3 has highest scrap rate this week (3.2%). Root cause: ribbon lot RL-2024-089 shows pattern of poor solder adhesion. Recommend: ribbon lot quarantine + supplier notification."
+
+---
+
+## PART E: QUALITY INSPECTION AGENT
+
+### E1. AI-AOI (Automated Optical Inspection)
+- Deployed at: Cell stringing (post-solder), pre-lamination, final visual inspection
+- Camera: Line-scan camera (10,000+ cells/hour capability; Goldi Solar implementation)
+- Defect detection: Micro-cracks, broken cells, misalignment, solder bead defects, ribbon shift
+- AI model: CNN-based classification; trained on defect image library; >98% accuracy target
+- Output: Pass/Fail + defect type + defect coordinates → MES quality record
+- False positive management: Operator review queue for uncertain classifications
+
+### E2. EL (Electroluminescence) Testing
+- Physics: Forward-biased silicon emits near-IR light; defects appear dark
+- When: Pre-lamination (free-standing laminate) and post-final-assembly
+- AI classification: Micro-crack (type A, B, C, D), broken finger, inactive cell area
+- IEC criteria: Area of inactive cells < 0.5% of active area for Grade A
+- MES: EL image stored (linked to module serial); classification result; disposition decision
+
+### E3. Flash Testing
+- IEC 61215 compliant: Temperature 25°C ±2°C; irradiance 1000 W/m² ±2%; spectrum AM1.5G
+- Parameters: Pmax (Wp), Voc (V), Isc (A), FF (%), Eta (%), Rs (series resistance), Rsh (shunt)
+- Sorting: Modules binned within ±2.5W of nameplate for delivery batches
+- Traceability: Flash test result per module serial → linked to ALMM compliance record
+- Calibration: Reference cell calibration every 4 hours; traceable to NREL/Fraunhofer
+
+---
+
+## PART F: ADVANCED PLANNING & SCHEDULING (APS) DEEP DIVE
+
+### F1. APS vs. Standard MRP Comparison
+| Capability | SAP MRP | APS/PODISE |
+|-----------|---------|-----------|
+| Scheduling granularity | Day-level | Hour/minute-level |
+| Capacity handling | Infinite capacity | Finite capacity |
+| Rush order response | Batch run required | <30 seconds |
+| Bottleneck visibility | None | Real-time |
+| Lot-size constraints | Basic | Complex multi-level |
+| Re-optimization | Manual | Automatic on events |
+| Technology variants | Limited | Full BOM variant |
+| Gantt visualization | None | Real-time Angular |
+
+### F2. Scheduling Algorithms Used
+1. Critical Path Method (CPM): For multi-line dependency scheduling
+2. Priority Dispatch Rules: SPT (Shortest Processing Time), EDD (Earliest Due Date), CR (Critical Ratio)
+3. Genetic Algorithm / Simulated Annealing: For multi-objective optimization
+4. Theory of Constraints (TOC): Drumbeat scheduling around bottleneck
+5. Machine Learning: Historical data → predict actual vs. standard cycle time
+
+### F3. Scheduling Scenarios (Solar-Specific)
+Scenario A: Standard 60-cell PERC module (routine)
+  - Sales order: 1000 modules by Friday
+  - PODISE: Backward schedule → requires 1200 cells (20% scrap buffer at stringing)
+  - Lot splits: 84 laminator batches of 12; 1000 flash test cycles; 34 packing batches
+  - Timeline: Start Monday 06:00 → complete Thursday 18:00 (1-day buffer to delivery)
+
+Scenario B: Bifacial TOPCon rush order
+  - Different BOM (2nd glass instead of backsheet)
+  - Laminator parameters must change → cleaning cycle required (2 hours downtime planned)
+  - PODISE flags: Laminator changeover conflict with existing schedule
+  - AI recommendation: "Reschedule standard order Line 2 to Line 1; use Line 2 for bifacial. Impact: +4 hours for Line 1 customer, delivery still within window."
+
+Scenario C: Machine breakdown mid-shift
+  - Event: Stringer #2 breaks down at 10:30; repair ETA 4 hours
+  - PODISE re-optimizes: Moves stringer #2 orders to stringers #1, #3, #4
+  - Calculates new completion time: +1.5 hours; customer delivery unaffected
+  - Auto-notification: Supervisor, planning, customer service (if delivery affected)
+
+---
+
+## PART G: DISPATCH & WMS INTEGRATION
+
+### G1. Dispatch Planning (Solar-Specific)
+- Module stacking: Standard pallet = 30 panels (max 700 kg); bifacial = 25 panels (glass-glass)
+- Loading: Route-optimized truck loading; dock bay assignment via AI
+- Documents: Packing list, invoice, ALMM compliance certificate, COC, test reports per serial
+- QR code scanning at dispatch: Each pallet scanned out; WMS deducts inventory; SAP GI posted
+- Cold chain not required; UV/moisture protection during transport critical (humidity <60%)
+
+### G2. WMS Capabilities Needed
+- Inbound: GR scanning, putaway rule-based (FEFO - First Expired First Out for EVA/backsheet)
+- Inventory management: Real-time location tracking; LPN (License Plate Number) per pallet
+- Outbound: Pick by wave, route-based loading sequence, dock scheduling
+- Dispatch: ~1.6 FTE savings per day with system-directed loading vs manual
+- SAP WM / EWM integration or standalone WMS with SAP interface
+
+---
+
+## PART H: ROI & BUSINESS CASE FOR SOLAR MES
+
+### H1. Quantified ROI Arguments
+Labor efficiency savings:
+- Manual data entry elimination: 10-15 operators × $500/month = $60,000-$90,000/year
+- Quality inspection (AOI replaces manual): 5 operators × $600/month = $36,000/year
+- Planning and scheduling: 2 planners × $800/month = $19,200/year
+- Total labor: ~$115,000-$145,000/year
+
+Quality improvement:
+- 1% FPY improvement on 500 MW line: 2.5 MW extra good output × $0.25/W = $625,000/year
+- Scrap material reduction 20%: On $5M/year scrap cost → $1,000,000 saved
+- Warranty claim reduction 30%: On $500K/year warranty cost → $150,000 saved
+- Total quality: ~$1,775,000/year (500 MW line)
+
+OEE improvement:
+- Downtime reduction 25% (better visibility + predictive maintenance)
+- On 500 MW line at 85% OEE → improved to 92% OEE → 7% more output
+- 500 MW × 7% × $0.20/W margin = $700,000/year additional contribution
+
+Inventory optimization:
+- WIP reduction 15-25%: On $10M average WIP → $1,500,000-$2,500,000 freed capital
+- Cost of capital saving (8% rate): $120,000-$200,000/year
+
+ALMM compliance:
+- Avoiding non-compliance penalty/rejection from govt tenders: Priceless
+- Audit documentation time reduction: 80% reduction in audit preparation time
+
+### H2. Typical ROI Summary (500 MW plant)
+Total annual benefit: $2,000,000 - $3,500,000
+Implementation investment: $600,000 - $1,200,000 (depending on scope)
+Payback period: 6-18 months
+5-year NPV: $7,000,000 - $15,000,000
+
+### H3. Payback Benchmarks
+- Small plant (<200 MW): 18-24 months payback
+- Mid-size plant (200-500 MW): 12-18 months payback
+- Large plant (>500 MW): 8-14 months payback
+- With cell manufacturing in-house: Add 20-30% to investment; proportionally more savings
+
+---
+
+## PART I: TECHNOLOGY STACK FOR SOLAR MES
+
+### I1. AI-Native MES Architecture
+- Backend: Java Spring Boot microservices; Kubernetes-deployed; Docker containers
+- Event Bus: Apache Kafka (event backbone; decoupling; replay; horizontal scaling)
+- Workflow Engine: Temporal.io (durable, fault-tolerant long-running workflows)
+- AI Orchestration: LangChain4j @SupervisorAgent pattern; Ollama + Llama 3.2 (on-premises)
+- MCP Layer: Model Context Protocol — uniform tool interface for SAP BAPI, JDBC, Kafka, OPC-UA
+- On-premises AI inference: Manufacturing IP never leaves factory network; data sovereignty
+- Frontend: Angular with WebSocket real-time dashboards; Chart.js OEE gauges; Gantt component
+- Persistence: PostgreSQL (audit trail, history, recovery); InfluxDB/TimescaleDB (time-series sensor data)
+- Observability: Prometheus + OpenTelemetry + Grafana dashboards
+- Security: OAuth2/JWT; role-based access; TLS 1.3 everywhere; audit logs immutable
+
+### I2. Multi-Agent System Architecture
+1. Orchestrator Agent: Receives high-level goal; breaks into fault-tolerant agent task sequences
+2. Production Order Design Agent: Validates feasibility; fetches BOM & routing from SAP
+3. PODISE/Scheduler Agent: Backward/forward scheduling; lot splitting; capacity check
+4. Line Scheduler Agent: Finite-capacity scheduling; Gantt generation; WebSocket push
+5. Material Allocation Agent: Auto-reserves in SAP via BAPI_GOODSMVT_CREATE
+6. PDI/PDO Tracking Agent: Ingests L2 data; Kafka publish; PostgreSQL persist
+7. Quality Inspection Agent: EL/AOI image classification; flash test result storage
+8. Predictive Maintenance Agent: Sensor stream monitoring; failure forecast
+9. Dispatch Planning Agent: AI-optimized truck loading; dock assignment
+10. Reporting Agent: Shift-end summaries; OEE insights; plain-English AI reports
+
+### I3. Hardware Infrastructure (Typical 500 MW Plant)
+- MES Servers: 2× application servers (16 cores, 64 GB RAM) + 1 DB server (32 cores, 128 GB)
+- Edge Devices: Industrial IoT gateway per line (e.g., Advantech, Siemens IPC)
+- OPC UA Server: 1 per production line or shared via Kepware/Ignition gateway
+- Network: Segregated OT/IT network; DMZ for MES; firewall between L2 and L3
+- Display: Large format OEE displays per line (55"); operator tablets (1 per work center)
+- AI Server: GPU server for EL image classification (NVIDIA A10 or RTX 4090 class)
+
+---
+
+## PART J: IMPLEMENTATION FRAMEWORK (PHASED)
+
+### J1. Phase 0: Pre-Project (Weeks 1-4)
+- Factory walk-through and current state assessment
+- Machine connectivity audit (OPC UA readiness of each machine)
+- SAP landscape assessment (version, modules active, integration options)
+- Data quality assessment (master data completeness in SAP)
+- Infrastructure readiness (network, servers, IT security policy)
+- Business case finalization with CFO/COO sign-off
+
+### J2. Phase 1: Discovery & Blueprint (Weeks 5-12)
+- AS-IS process mapping (all 11 manufacturing steps)
+- Gap analysis (current vs. target state)
+- Functional specification document (FSD) for all MES modules
+- Data migration plan (master data from SAP/Excel)
+- Interface design specification (SAP, OPC UA, WMS)
+- Technical architecture design sign-off
+- Project charter, RACI matrix, risk register
+- Training needs assessment (operators, supervisors, IT team)
+
+### J3. Phase 2: Core MES Configuration (Weeks 13-28)
+- Work center, BOM, routing master data loading
+- Production order management configuration
+- Shop floor UI design and development
+- SAP integration (IDoc/REST): Production orders, confirmations, GR/GI
+- Quality management module: Inspection plans, defect codes, sampling rules
+- Reporting and dashboards (OEE, production summary, quality summary)
+- Unit testing and system integration testing
+
+### J4. Phase 3: Equipment Integration (Weeks 16-32, overlapping)
+- OPC UA tag mapping for each machine type
+- Kafka topic design and consumer development
+- PDI/PDO agent deployment and testing per machine
+- Flash tester integration (IV curve data capture)
+- EL tester integration (image classification AI deployment)
+- Laminator temperature profile capture
+- Edge device deployment and network configuration
+- L2-L3 interface testing and sign-off
+
+### J5: Phase 4: APS/PODISE Deployment (Weeks 20-30)
+- Work center capacity model (shift calendar, machine capacity)
+- Lot-size constraint configuration (per machine type)
+- Scheduling algorithm calibration (cycle times from historical data)
+- SAP order dressing integration (VA01 → CO01 flow)
+- Gantt dashboard deployment and training
+- Parallel run: PODISE vs. manual planning (4 weeks)
+
+### J6. Phase 5: Testing & Go-Live (Weeks 28-36)
+- User Acceptance Testing (UAT) with super-users
+- Load testing (simulate peak production day)
+- Disaster recovery testing (failover test)
+- Security penetration test
+- Parallel run (old system vs. MES, 2-4 weeks)
+- Go-live: Line by line (not all at once; start with 1 pilot line)
+- 24/7 hypercare support for 4 weeks post go-live
+
+### J7. Phase 6: Optimization & Expansion (Weeks 36-52)
+- KPI baseline vs. target comparison
+- AI model training on production data (EL classifier fine-tuning)
+- PODISE algorithm calibration on real cycle times
+- Rollout to remaining production lines
+- ALMM compliance reporting automation
+- Advanced analytics (predictive quality, yield correlation analysis)
+
+---
+
+## PART K: CHANGE MANAGEMENT & ADOPTION
+
+### K1. Key Success Factors
+1. Executive Sponsorship: Plant head must champion the MES; visible and committed
+2. Super-User Network: 2 super-users per shift per line (operators promoted to system champions)
+3. Floor Training: Hands-on at actual workstations; in local language (Hindi/Gujarati)
+4. Management Dashboards: Daily OEE review by plant manager builds habit
+5. Quick Wins: Publish OEE improvements weekly in first 3 months (builds confidence)
+6. Go-Live Strategy: Pilot 1 line first; prove value; roll out remaining lines
+
+### K2. Training Plan
+- Operators: 4 hours hands-on training per workstation; refresher after 1 month
+- Supervisors: 8 hours (data review, quality alert response, shift reports)
+- Production Planning: 16 hours (PODISE/APS usage, Gantt interpretation)
+- IT/Admin: 24 hours (system administration, backup, user management)
+- Management: 4 hours (dashboard interpretation, KPI management)
+
+### K3. Resistance Management
+Common resistance patterns in Indian solar factories:
+- "Our system is working fine" → Show cost of current invisible quality losses
+- "Too much data entry" → Demonstrate auto-capture; show 5x less entry than current Excel
+- "Machine cannot connect" → OPC UA retrofit proof-of-concept on 1 machine first
+- "SAP already does this" → Show PODISE doing in 2 seconds what SAP MRP takes 1 hour
+
+---
+
+## PART L: PRE-SALES CONSULTING TOOLKIT
+
+### L1. Discovery Questions (Customer Interview)
+Production:
+1. Annual capacity? Current actual output? Gap?
+2. PERC/TOPCon/Bifacial/HJT mix? Planning technology transition?
+3. How many production lines? Shifts per day? Machine types per operation?
+4. In-house cell manufacturing or module-only?
+5. Cell sourcing countries? ALMM List-II compliance planned?
+
+Quality:
+6. Current FPY per operation? Where are highest losses?
+7. EL testing pre-lamination? AI-AOI deployed?
+8. How are flash test results stored? Searchable by serial number?
+9. ALMM compliance status? Any audit findings?
+10. Warranty claims per year? Root cause analysis process?
+
+Systems:
+11. ERP: SAP (which version/modules)? Oracle? Custom?
+12. How is production tracked today? Excel? Paper? Legacy system?
+13. Machine connectivity: OPC UA available? Any machines with data interfaces?
+14. IT infrastructure: Server room on-premise? Cloud preference?
+15. Timeline and budget envelope?
+
+Pain Point → Business Impact Mapping:
+| Pain Point | Business Impact | MES Module |
+|-----------|----------------|------------|
+| Manual tracking/Excel | Delayed decisions; data errors; audit risk | SFDC + PDI/PDO Agent |
+| No real-time OEE | Cannot identify bottleneck; 5-10% hidden capacity loss | OEE Dashboard + Equipment Integration |
+| No batch genealogy | Cannot do ALMM recalls; 1 defect → ship all suspect panels | Material Genealogy + Serialization |
+| Flash test data in instrument | Cannot analyze yield trends; ALMM non-compliance risk | Flash Tester Integration + QMS |
+| Manual scheduling | Planner bottleneck; suboptimal sequence; rush order chaos | PODISE + APS |
+| ERP-MES data mismatch | SAP shows wrong WIP; finance/operations disconnect | ERP-MES Integration |
+| No predictive maintenance | Unplanned breakdowns 6-8%/year machine availability loss | Predictive Maintenance Agent |
+| Paper-based dispatch | Certificate errors; customer disputes; 1.5 FTE wasted | WMS + Dispatch Agent + COC Generation |
+
+### L2. ROI Argument Bank (Customized)
+For a 500 MW line with SAP ERP:
+- FPY +1% → $625,000/year additional output value
+- OEE +7% → $700,000/year capacity gain
+- Labor efficiency → $115,000-$145,000/year
+- Scrap reduction 20% → $1,000,000/year
+- WIP capital release 15% → $1,500,000 one-time
+Total annual: ~$2.5M; Implementation: ~$750K; Payback: ~4 months
+
+### L3. Proposal Structure (Complete)
+Section 1: Executive Summary (1 page; for CFO/COO/Plant Head)
+Section 2: Customer Current State & Challenges (quantified pain points)
+Section 3: Proposed Solution Architecture (diagram + narrative)
+Section 4: Module-by-Module Solution Description (functional detail)
+Section 5: PODISE/APS — Scheduling Intelligence (differentiator)
+Section 6: AI Agents Description (innovation, differentiator)
+Section 7: ALMM Compliance Solution (regulatory requirement)
+Section 8: Integration Architecture (SAP, OPC UA, WMS)
+Section 9: Implementation Roadmap (phase-wise with deliverables)
+Section 10: ROI & Business Case (quantified, customer-specific)
+Section 11: Risk Assessment & Mitigation
+Section 12: Why Choose Us (references, team, methodology)
+Section 13: Commercial Proposal (license fees, implementation fees, support)
+Section 14: Terms, Validity, Next Steps
+
+### L4. Competitive Differentiation Points
+vs. Standard MES vendors:
+- AI-native from ground up (not bolt-on AI)
+- PODISE: Real-time scheduling in <2 seconds (vs. SAP MRP batch runs)
+- On-premises LLM: Data sovereignty; IP stays in factory
+- Solar-domain expertise: Not generic MES; designed for 11-step solar process
+- Kafka event-driven: Full audit trail; replayable events; zero data loss
+- MCP layer: Modular, extensible; new integrations without code changes
+
+vs. Manual / Excel:
+- 80% reduction in manual data entry
+- 100% traceability vs. 30% with Excel
+- Real-time visibility vs. next-day reports
+- ALMM compliance automated vs. manual extraction
+
+---
+
+## PART M: EFFORT ESTIMATION MODEL (DETAILED)
+
+### M1. Effort by Module (Person-Months)
+| Module | Complexity | Low | Medium | High |
+|--------|-----------|-----|--------|------|
+| Core MES + SFDC | Per line | 3 | 5 | 7 |
+| QMS | Flat | 2 | 3 | 5 |
+| Equipment Integration | Per machine type | 1.5 | 2.5 | 4 |
+| SAP Integration | Flat | 2 | 4 | 6 |
+| WMS Integration | Flat | 1 | 2 | 4 |
+| PODISE/APS | Flat | 4 | 6 | 10 |
+| PDI/PDO Tracking Agent | Per line | 1 | 2 | 3 |
+| Quality Inspection Agent (AI) | Flat | 3 | 5 | 8 |
+| Predictive Maint. Agent | Per machine type | 0.5 | 1 | 2 |
+| Reporting & Dashboards | Flat | 1 | 2 | 4 |
+| ALMM Compliance Module | Flat | 1 | 2 | 3 |
+| Change Management & Training | Per 20 users | 0.5 | 1 | 1.5 |
+| Project Management | 15% of total | - | - | - |
+
+### M2. Blended Rate Assumptions
+- Functional Consultant: $9,000/PM
+- Solution Architect: $12,000/PM
+- Developer (Java/Python): $7,000/PM
+- QA Engineer: $6,000/PM
+- Project Manager: $10,000/PM
+- Blended rate: $8,500/PM (India/APAC mixed team)
+- License fees (if applicable): $20-50/user/month or perpetual
+
+### M3. Infrastructure Cost Estimate
+- On-premise servers (MES + DB): $30,000-$60,000
+- Edge IoT gateways (per line): $3,000-$5,000/line
+- OPC UA licenses (Kepware/Ignition): $10,000-$30,000
+- Display hardware (OEE screens): $500-$800/unit
+- Implementation hardware total: $60,000-$150,000 (4-line plant)
+
+---

@@ -1,0 +1,22 @@
+# ── Existing deps ─────────────────────────────────────────────────────────────
+langchain>=0.2.0
+langchain-core>=0.2.0
+langchain-community>=0.2.0
+langchain-ollama>=0.1.0
+langgraph>=0.1.0
+chromadb>=0.5.0
+python-dotenv>=1.0.0
+reportlab>=4.0.0
+requests>=2.31.0
+openai>=1.0.0
+
+# ── New: CrewAI ───────────────────────────────────────────────────────────────
+crewai>=0.28.0
+crewai-tools>=0.1.0
+
+# ── New: FastAPI backend ──────────────────────────────────────────────────────
+fastapi>=0.110.0
+uvicorn[standard]>=0.27.0
+python-multipart>=0.0.9
+aiofiles>=23.2.1
+websockets>=12.0
